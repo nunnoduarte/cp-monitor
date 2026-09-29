@@ -1,13 +1,23 @@
-name: Test Notification
+name: Monitor Comboios
 
 on:
   workflow_dispatch:
 
 jobs:
-  notify:
+  monitor:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Enviar notificacao
-        run: |
-          curl -d "GitHub ligado com sucesso" https://ntfy.sh/${{ secrets.NTFY_TOPIC }}
+      - name: Obter codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install requests
+
+      - name: Executar monitor
+        run: python src/monitor.py
