@@ -4,4 +4,6 @@ url = "https://www.infraestruturasdeportugal.pt/negocios-e-servicos/partidas-che
 
 r = requests.get(url)
 
-print(r.text[:10000])
+print("STATUS:", r.status_code)
+print("TAMANHO:", len(r.text))
+print(r.text[:1000])
