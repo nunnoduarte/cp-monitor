@@ -1,4 +1,3 @@
-Python
 import requests
 
 urls = [
@@ -7,12 +6,9 @@ urls = [
 ]
 
 for url in urls:
-try:
 r = requests.get(url, timeout=20)
 
-print("\nURL:", url)
+print()
+print("URL:", url)
 print("STATUS:", r.status_code)
 print(r.text[:500])
-
-except Exception as e:
-print("ERRO:", e)
