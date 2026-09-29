@@ -1,13 +1,13 @@
 name: Test Notification
 
-"on":
-workflow_dispatch:
+on:
+  workflow_dispatch:
 
 jobs:
-notify:
-runs-on: ubuntu-latest
+  notify:
+    runs-on: ubuntu-latest
 
-steps:
-- name: Enviar notificacao
-run: |
-curl -d "Teste GitHub" https://ntfy.sh/${{ secrets.NTFY_TOPIC }}
+    steps:
+      - name: Enviar notificacao
+        run: |
+          curl -d "Teste GitHub" https://ntfy.sh/${{ secrets.NTFY_TOPIC }}
