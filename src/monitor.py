@@ -1,12 +1,7 @@
 import requests
 
-TOPIC = "comboios-nuno-braga-porto-1972"
+url = "https://www.infraestruturasdeportugal.pt/negocios-e-servicos/partidas-chegadas/9429157/00:00/23:59/INTERNACIONAL,ALFA,IC,IR,REGIONAL,URB|SUBUR,ESPECIAL"
 
-response = requests.post(
-f"https://ntfy.sh/{TOPIC}",
-data="Teste".encode("utf-8")
-)
+r = requests.get(url)
 
-print("STATUS:", response.status_code)
-print("RESPOSTA:")
-print(response.text)
+print(r.text[:10000])
