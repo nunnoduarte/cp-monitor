@@ -1,8 +1,13 @@
 import requests
 
-url = "https://www.cp.pt/sites/spring/stations"
+url = "https://www.cp.pt/sites/spring/station/trains"
 
-r = requests.get(url, timeout=20)
+params = {
+"stationId": "94-29157"
+}
 
+r = requests.get(url, params=params)
+
+print("URL:", r.url)
 print("STATUS:", r.status_code)
-print(r.text[:500])
+print(r.text[:1000])
