@@ -1,14 +1,8 @@
 import requests
-from datetime import datetime
 
-TOPIC = "comboios-nuno-braga-porto-1972"
+url = "https://www.infraestruturasdeportugal.pt/negocios-e-servicos/partidas-chegadas/9429157/00:00/23:59/INTERNACIONAL,ALFA,IC,IR,REGIONAL,URB|SUBUR,ESPECIAL"
 
-mensagem = (
-    f"✅ Monitor ativo\n"
-    f"Hora: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
-)
+r = requests.get(url)
 
-requests.post(
-    f"https://ntfy.sh/{TOPIC}",
-    data=mensagem.encode("utf-8")
-)
+print("Status:", r.status_code)
+print(r.text[:1000])
