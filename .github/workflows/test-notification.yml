@@ -1,0 +1,19 @@
+name: Test Notification
+ 
+on:
+workflow_dispatch:
+ 
+jobs:
+notify:
+ 
+runs-on: ubuntu-latest
+ 
+steps:
+ 
+- name: Enviar notificação para o telemóvel
+run: |
+curl \
+-H "Title: GitHub" \
+-H "Priority: default" \
+-d "🚆 Teste recebido do GitHub Actions" \
+https://ntfy.sh/${{ secrets.NTFY_TOPIC }}
