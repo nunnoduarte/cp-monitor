@@ -1,12 +1,15 @@
 import requests
+from datetime import datetime
 
 TOPIC = "comboios-nuno-braga-porto-1972"
 
-response = requests.post(
-f"https://ntfy.sh/{TOPIC}",
-data="Teste GitHub".encode("utf-8"),
-headers={"User-Agent": "GitHubActions"}
+mensagem = (
+f"✅ Monitor ativo\n"
+f"Hora: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
 )
 
-print("STATUS:", response.status_code)
-print("RESPOSTA:", response.text)
+requests.post(
+f"https://ntfy.sh/{TOPIC}",
+data=mensagem.encode("utf-8"),
+headers={"User-Agent": "GitHubActions"}
+)
