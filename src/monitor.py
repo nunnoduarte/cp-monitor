@@ -1,15 +1,17 @@
 import requests
-from datetime import datetime
 
-TOPIC = "comboios-nuno-braga-porto-1972"
+urls = [
+"https://www.cp.pt/sites/spring/stations",
+"https://www.cp.pt/sites/spring/station/trains?stationId=94-29157"
+]
 
-mensagem = (
-f"✅ Monitor ativo\n"
-f"Hora: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
-)
+for url in urls:
+try:
+r = requests.get(url, timeout=20)
 
-requests.post(
-f"https://ntfy.sh/{TOPIC}",
-data=mensagem.encode("utf-8"),
-headers={"User-Agent": "GitHubActions"}
-)
+print("\nURL:", url)
+print("STATUS:", r.status_code)
+print(r.text[:500])
+
+except Exception as e:
+print("ERRO:", e)
