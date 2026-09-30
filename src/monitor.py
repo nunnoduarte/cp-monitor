@@ -29,7 +29,12 @@ HEADERS = {
 
 ANTECEDENCIA_MIN = 60   # começa a vigiar X minutos antes da janela
 ATRASO_MIN_ALERTA = 5   # atraso (min) a partir do qual avisa
-SO_PROBLEMAS = True     # True: só atrasos/supressões | False: todos os comboios da janela
+LEMBRETE_MIN = 20       # envia um lembrete (estado + lotação) X min antes de cada comboio; 0 = desligado
+
+# Significado dos níveis de lotação da API. ATENÇÃO: valores assumidos (0 = baixa,
+# 1 = média, 2 = alta); confirmar na app/site da CP e ajustar. Valores
+# desconhecidos aparecem como número.
+OCUPACAO = {0: "baixa", 1: "média", 2: "alta"}
 
 # vista: DEPARTURES (partidas da estação) ou ARRIVALS (chegadas à estação)
 # destino/origem: código da estação para filtrar (None = sem filtro)
@@ -45,12 +50,12 @@ TRAJETOS = [
     },
     {
         "nome": "Porto-Campanhã > Braga",
-        "estacao": "94-2006",           # Porto-Campanhã (confirmar abrindo o URL no browser)
+        "estacao": "94-2006",           # Porto-Campanhã
         "vista": "DEPARTURES",
         "destino": "94-29157",          # só comboios com destino final Braga
         "origem": None,
-        "inicio": "17:00",
-        "fim": "18:15",
+        "inicio": "16:00",
+        "fim": "18:20",
     },
 ]
 
@@ -107,6 +112,13 @@ def suprimido(paragem):
     return True
 
 
+def lotacao(paragem):
+    o = paragem.get("occupancy")
+    if o is None:
+        return ""
+    return OCUPACAO.get(o, f"nível {o}")
+
+
 def enviar(titulo, mensagem, prioridade="default", tags="train"):
     # Os valores dos cabeçalhos HTTP têm de ser latin-1 (sem "→").
     r = requests.post(
@@ -138,6 +150,7 @@ def main():
         return
 
     hoje = agora.strftime("%Y-%m-%d")
+    # mantém só os alertas de hoje
     estado = {k: v for k, v in carregar_estado().items() if k.startswith(hoje)}
 
     for t in TRAJETOS:
@@ -167,6 +180,9 @@ def main():
             print(json.dumps(p, ensure_ascii=False))  # fica no log do Actions
 
             num = p.get("trainNumber")
+            occ = lotacao(p)
+            extra = f" | lotação {occ}" if occ else ""
+
             if suprimido(p):
                 situacao, prioridade, tags = "suprimido", "urgent", "rotating_light"
                 texto = f"{h} (comboio {num}) SUPRIMIDO"
@@ -176,12 +192,14 @@ def main():
                     # blocos de 5 min: evita repetir o alerta a cada minuto
                     situacao = f"atraso{atraso // 5 * 5}"
                     prioridade, tags = "high", "warning"
-                    texto = f"{h} (comboio {num}) com {atraso} min de atraso"
-                elif SO_PROBLEMAS and not teste:
-                    continue
+                    texto = f"{h} (comboio {num}) com {atraso} min de atraso{extra}"
                 else:
-                    situacao, prioridade, tags = "ok", "default", "white_check_mark"
-                    texto = f"{h} (comboio {num}) a horas"
+                    faltam = (hora(h, agora) - agora).total_seconds() / 60
+                    if not teste and not (LEMBRETE_MIN > 0 and -2 <= faltam <= LEMBRETE_MIN):
+                        continue
+                    situacao, prioridade, tags = "lembrete", "default", "train"
+                    estado_txt = "a horas" if atraso <= 0 else f"{atraso} min de atraso"
+                    texto = f"{h} (comboio {num}) {estado_txt}{extra}"
 
             chave = f"{hoje}|{num}|{situacao}"
             if chave in estado and not teste:
