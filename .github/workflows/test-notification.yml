@@ -38,4 +38,7 @@ jobs:
       - name: Executar monitor
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          CP_API_KEY: ${{ secrets.CP_API_KEY }}
+          CP_CONNECT_ID: ${{ secrets.CP_CONNECT_ID }}
+          CP_CONNECT_SECRET: ${{ secrets.CP_CONNECT_SECRET }}
         run: python src/monitor.py
