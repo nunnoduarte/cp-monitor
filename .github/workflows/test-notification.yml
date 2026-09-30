@@ -2,6 +2,11 @@ name: Monitor CP
 
 on:
   workflow_dispatch:
+    inputs:
+      teste:
+        description: "Modo de teste (ignora janelas e fim de semana e avisa de todos os comboios)"
+        type: boolean
+        default: false
   schedule:
     # Horas em UTC (cobrem verão e inverno). O script confirma a hora local.
     - cron: "*/10 4-6 * * 1-5"    # manhã (Braga > Porto)
@@ -41,4 +46,5 @@ jobs:
           CP_API_KEY: ${{ secrets.CP_API_KEY }}
           CP_CONNECT_ID: ${{ secrets.CP_CONNECT_ID }}
           CP_CONNECT_SECRET: ${{ secrets.CP_CONNECT_SECRET }}
+          TESTE: ${{ inputs.teste && '1' || '' }}
         run: python src/monitor.py
