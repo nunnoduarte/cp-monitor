@@ -1,16 +1,23 @@
-name: Monitor Comboios
+name: Monitor CP
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
+    # Horas em UTC (cobrem verão e inverno). O script confirma a hora local.
+    - cron: "*/10 4-6 * * 1-5"    # manhã (Braga > Porto)
+    - cron: "*/10 15-18 * * 1-5"  # tarde (Porto > Braga)
+
+concurrency:
+  group: monitor-cp
+  cancel-in-progress: false
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
-      - name: Obter codigo
+      - name: Obter código
         uses: actions/checkout@v4
 
       - name: Configurar Python
@@ -19,7 +26,16 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: pip install requests
+
+      - name: Restaurar estado dos alertas
+        uses: actions/cache@v4
+        with:
+          path: estado
+          key: estado-${{ github.run_id }}
+          restore-keys: estado-
 
       - name: Executar monitor
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python src/monitor.py
