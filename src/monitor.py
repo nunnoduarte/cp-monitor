@@ -29,15 +29,15 @@ HEADERS = {
 
 ANTECEDENCIA_MIN = 60   # começa a vigiar X minutos antes da janela
 ATRASO_MIN_ALERTA = 5   # atraso (min) a partir do qual avisa
-LEMBRETE_MIN = 20       # envia um lembrete (estado + lotação) X min antes de cada comboio; 0 = desligado
+LEMBRETE_MIN = 20       # lembrete (estado + lotação + linha) X min antes de cada comboio; 0 = desligado
 
-# Significado dos níveis de lotação da API. ATENÇÃO: valores assumidos (0 = baixa,
-# 1 = média, 2 = alta); confirmar na app/site da CP e ajustar. Valores
-# desconhecidos aparecem como número.
+# Significado dos níveis de lotação da API (valores assumidos, por confirmar
+# na app da CP). Valores desconhecidos aparecem como "nível N".
 OCUPACAO = {0: "baixa", 1: "média", 2: "alta", 3: "muito alta"}
 
 # vista: DEPARTURES (partidas da estação) ou ARRIVALS (chegadas à estação)
 # destino/origem: código da estação para filtrar (None = sem filtro)
+# inicio/fim: janela horária (se alteraste as tuas, mantém os teus valores)
 TRAJETOS = [
     {
         "nome": "Braga > Porto-Campanhã",
@@ -164,10 +164,11 @@ def main():
         except Exception as e:  # avisa uma vez por dia e trajeto
             chave = f"{hoje}|{t['nome']}|erro"
             if chave not in estado:
-                enviar("Monitor com erro", f"{t['nome']}: {e!r}", "low", "warning")
+                enviar("Monitor com erro", f"{t['nome']}: {e!r}", "high", "warning")
                 estado[chave] = "1"
             continue
 
+        encontrados = 0
         for p in paragens:
             h = p.get(campo_hora)
             if not h or not (ini <= hora(h, agora) <= fim):
@@ -177,6 +178,7 @@ def main():
             if t["origem"] and (p.get("trainOrigin") or {}).get("code") != t["origem"]:
                 continue
 
+            encontrados += 1
             print(json.dumps(p, ensure_ascii=False))  # fica no log do Actions
 
             num = p.get("trainNumber")
@@ -208,6 +210,18 @@ def main():
 
             enviar(("[TESTE] " if teste else "") + t["nome"], texto, prioridade, tags)
             if not teste:
+                estado[chave] = "1"
+
+        if encontrados == 0 and not teste:
+            chave = f"{hoje}|{t['nome']}|vazio"
+            if chave not in estado:
+                enviar(
+                    "Monitor sem comboios",
+                    f"{t['nome']}: nenhum comboio encontrado na janela "
+                    "(feriado ou alteração na API?)",
+                    "default",
+                    "warning",
+                )
                 estado[chave] = "1"
 
     if not teste:
