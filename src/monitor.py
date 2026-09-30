@@ -34,7 +34,7 @@ LEMBRETE_MIN = 20       # envia um lembrete (estado + lotação) X min antes de 
 # Significado dos níveis de lotação da API. ATENÇÃO: valores assumidos (0 = baixa,
 # 1 = média, 2 = alta); confirmar na app/site da CP e ajustar. Valores
 # desconhecidos aparecem como número.
-OCUPACAO = {0: "baixa", 1: "média", 2: "alta"}
+OCUPACAO = {0: "baixa", 1: "média", 2: "alta", 3: "muito alta"}
 
 # vista: DEPARTURES (partidas da estação) ou ARRIVALS (chegadas à estação)
 # destino/origem: código da estação para filtrar (None = sem filtro)
