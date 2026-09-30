@@ -181,7 +181,8 @@ def main():
 
             num = p.get("trainNumber")
             occ = lotacao(p)
-            extra = f" | lotação {occ}" if occ else ""
+            plat = p.get("platform")
+            extra = (f" | lotação {occ}" if occ else "") + (f" | linha {plat}" if plat else "")
 
             if suprimido(p):
                 situacao, prioridade, tags = "suprimido", "urgent", "rotating_light"
