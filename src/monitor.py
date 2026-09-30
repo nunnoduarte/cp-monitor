@@ -132,7 +132,9 @@ def guardar_estado(estado):
 
 def main():
     agora = datetime.now(TZ)
-    if agora.weekday() >= 5:  # sábado/domingo
+    # TESTE=1: ignora fins de semana e janelas e avisa de todos os comboios
+    teste = os.environ.get("TESTE") == "1"
+    if agora.weekday() >= 5 and not teste:  # sábado/domingo
         return
 
     hoje = agora.strftime("%Y-%m-%d")
@@ -140,7 +142,7 @@ def main():
 
     for t in TRAJETOS:
         ini, fim = hora(t["inicio"], agora), hora(t["fim"], agora)
-        if not (ini - timedelta(minutes=ANTECEDENCIA_MIN) <= agora <= fim):
+        if not teste and not (ini - timedelta(minutes=ANTECEDENCIA_MIN) <= agora <= fim):
             continue
 
         campo_hora, _ = campos(t["vista"])
@@ -175,20 +177,22 @@ def main():
                     situacao = f"atraso{atraso // 5 * 5}"
                     prioridade, tags = "high", "warning"
                     texto = f"{h} (comboio {num}) com {atraso} min de atraso"
-                elif SO_PROBLEMAS:
+                elif SO_PROBLEMAS and not teste:
                     continue
                 else:
                     situacao, prioridade, tags = "ok", "default", "white_check_mark"
                     texto = f"{h} (comboio {num}) a horas"
 
             chave = f"{hoje}|{num}|{situacao}"
-            if chave in estado:
+            if chave in estado and not teste:
                 continue
 
-            enviar(t["nome"], texto, prioridade, tags)
-            estado[chave] = "1"
+            enviar(("[TESTE] " if teste else "") + t["nome"], texto, prioridade, tags)
+            if not teste:
+                estado[chave] = "1"
 
-    guardar_estado(estado)
+    if not teste:
+        guardar_estado(estado)
 
 
 if __name__ == "__main__":
