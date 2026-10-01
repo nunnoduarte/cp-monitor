@@ -49,13 +49,13 @@ TRAJETOS = [
         "fim": "06:40",
     },
     {
-        "nome": "Porto-Campanhã > Braga",
-        "estacao": "94-2006",           # Porto-Campanhã
+        "nome": "Sao Frutuoso > Braga",
+        "estacao": "94-4051",           # São Frutuoso (apeadeiro; código deduzido, confirmar no teste)
         "vista": "DEPARTURES",
         "destino": "94-29157",          # só comboios com destino final Braga
         "origem": None,
-        "inicio": "16:00",
-        "fim": "18:20",
+        "inicio": "17:00",
+        "fim": "18:15",
     },
 ]
 
@@ -230,3 +230,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+            
