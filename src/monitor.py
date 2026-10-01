@@ -29,7 +29,7 @@ HEADERS = {
 
 ANTECEDENCIA_MIN = 60   # começa a vigiar X minutos antes da janela
 ATRASO_MIN_ALERTA = 5   # atraso (min) a partir do qual avisa
-LEMBRETE_MIN = 20       # lembrete (estado + lotação + linha) X min antes de cada comboio; 0 = desligado
+LEMBRETE_MIN = 40       # lembrete (estado + lotação + linha) X min antes de cada comboio; 0 = desligado
 
 # Significado dos níveis de lotação da API (valores assumidos, por confirmar
 # na app da CP). Valores desconhecidos aparecem como "nível N".
