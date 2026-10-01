@@ -8,9 +8,8 @@ on:
         type: boolean
         default: false
   schedule:
-    # Horas em UTC (cobrem verão e inverno). O script confirma a hora local.
-    - cron: "*/10 4-6 * * 1-5"    # manhã (Braga > Porto)
-    - cron: "*/10 15-18 * * 1-5"  # tarde (Porto > Braga)
+    - cron: "7,17,27,37,47,57 4-6 * * 1-5"    # manhã (Braga)
+    - cron: "7,17,27,37,47,57 15-18 * * 1-5"  # tarde (São Frutuoso)  # tarde (Porto > Braga)
 
 concurrency:
   group: monitor-cp
